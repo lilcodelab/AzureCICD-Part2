@@ -1,0 +1,32 @@
+trigger:
+- main
+- develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  DOCKER_BUILDKIT: 1
+  # Define different tags for main and develop branches
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
+    imageTag: '$(Build.BuildId)'  # Unique tag for production
+  ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+    imageTag: 'dev'  # Static tag for development
+
+steps:
+- task: Docker@2
+  displayName: 'Login to Azure Container Registry'
+  inputs:
+    containerRegistry: 'my-service-connection'
+    command: 'login'
+
+- task: Docker@2
+  displayName: 'Build and Push Docker Image'
+  inputs:
+    containerRegistry: 'my-service-connection'
+    repository: 'rg1-container-registry/acr-repository'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    buildContext: '.'
+    tags: |
+      $(imageTag)
