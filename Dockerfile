@@ -5,7 +5,7 @@ COPY AzureCICDUI/package*.json ./
 RUN npm install
 COPY AzureCICDUI/ .
 # Build the Angular application for production
-RUN npm run build --prod
+RUN npm run build:prod
 
 # Stage 2: Build the ASP.NET app (AzureCICD)
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS aspnet-build

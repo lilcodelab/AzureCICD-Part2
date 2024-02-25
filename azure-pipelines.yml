@@ -21,12 +21,22 @@ steps:
     command: 'login'
 
 - task: Docker@2
-  displayName: 'Build and Push Docker Image'
+  displayName: 'Build Docker Image'
   inputs:
     containerRegistry: 'my-service-connection'
-    repository: 'rg1-container-registry/acr-repository'
-    command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
+    repository: 'myfeaturescontainerregistry/acr-repository-3'
+    command: 'build'
+    Dockerfile: 'Dockerfile'
     buildContext: '.'
+    arguments: '--build-arg BUILD_ENV=$(BUILD_ENV) --build-arg DOTNET_ENV=$(DOTNET_ENV)'
+    tags: |
+      $(imageTag)
+
+- task: Docker@2
+  displayName: 'Push Docker Image'
+  inputs:
+    containerRegistry: 'my-service-connection'
+    repository: 'myfeaturescontainerregistry/acr-repository-3'
+    command: 'push'
     tags: |
       $(imageTag)
